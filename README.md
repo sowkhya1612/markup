@@ -1,79 +1,525 @@
-GitHub Markup
-=============
+JOINS
+------
 
-This library is the **first step** of a journey that every markup file in a repository goes on before it is rendered on GitHub.com:
+This appup will be used for joining multiple tables and get records..
+The Join selects records that have matching values in both tables based on the type of the join you mention.
+ 
+Let us take example of where ticket table joining with ticket_note table getting  ticket_id and count.
+The input data has to be sent as part of the request body as JSON format. Any attribute that is not needed for a particular operation should not be included.   
 
-1. `github-markup` selects an _underlying library_ to convert the raw markup to HTML. See the list of [supported markup formats](#markups) below.
-1. The HTML is sanitized, aggressively removing things that could harm you and your kin—such as `script` tags, inline-styles, and `class` or `id` attributes.
-1. Syntax highlighting is performed on code blocks. See [github/linguist](https://github.com/github/linguist#syntax-highlighting) for more information about syntax highlighting.
-1. The HTML is passed through other filters that add special sauce, such as emoji, task lists, named anchors, CDN caching for images, and autolinking.
-1. The resulting HTML is rendered on GitHub.com.
+**Expression** : /s/joins
 
-Please note that **only the first step** is covered by this gem — the rest happens on GitHub.com.  In particular, `markup` itself does no sanitization of the resulting HTML, as it expects that to be covered by whatever pipeline is consuming the HTML.
+**Description** : This  will be used for joining multiple tables and get records..
 
-Please see our [contributing guidelines](CONTRIBUTING.md) before reporting an issue.
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
 
-Markups
+**Rest Method** : POST
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/s/joins](https://dbapp.500apps.com/v2/s/joins)
+
+**Method** : ”POST”
+
+{"data":{
+
+"fields": "t.name,count(tn.is_reply) as count",
+
+"tables":[{"ticket_note":"tn"},{"ticket":"t"}],
+
+"join":[{"join_type":"left join", "table1":"tn","join_column1":"ticket_id","table2":"t","join_column2":"id"}],
+
+"group_by":"t.id"}}
+
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+**************************
+
+FILTERS
 -------
 
-The following markups are supported.  The dependencies listed are required if
-you wish to run the library. You can also run `script/bootstrap` to fetch them all.
+This rest api shall be used to specify various filter criteria and retrieve the data from several tables. 
 
-* [.markdown, .mdown, .mkdn, .md](http://daringfireball.net/projects/markdown/) -- `gem install commonmarker` (https://github.com/gjtorikian/commonmarker)
-* [.textile](https://www.promptworks.com/textile) -- `gem install RedCloth` (https://github.com/jgarber/redcloth)
-* [.rdoc](https://ruby.github.io/rdoc/) -- `gem install rdoc -v 3.6.1`
-* [.org](http://orgmode.org/) -- `gem install org-ruby` (https://github.com/wallyqs/org-ruby)
-* [.creole](http://wikicreole.org/) -- `gem install creole` (https://github.com/larsch/creole)
-* [.mediawiki, .wiki](http://www.mediawiki.org/wiki/Help:Formatting) -- `gem install wikicloth` (https://github.com/nricciar/wikicloth)
-* [.rst](http://docutils.sourceforge.net/rst.html) -- `pip install docutils`
-* [.asciidoc, .adoc, .asc](http://asciidoc.org/) -- `gem install asciidoctor` (http://asciidoctor.org)
-* [.pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::XHTML`
-  comes with Perl >= 5.10. Lower versions should install Pod::Simple from CPAN.
+ 1. **Supported Data Types**
 
-Installation
------------
+ * String
 
-```
-gem install github-markup
-```
+ * Number
 
-or
+ * Date
 
-```
-bundle install
-```
+ * Boolean
 
-from this directory.
+ 2. **Supported Operators**
 
-Usage
------
+ * EQUALS - User has to pass EQ in the attribute
 
-Basic form:
+ * NOT EQUALS - User has to pass NE
 
-```ruby
-require 'github/markup'
+ * LIKE - User has to pass LIKE
 
-GitHub::Markup.render('README.markdown', "* One\n* Two")
-```
+ * NOT LIKE - User has to pass NOTLIKE
 
-More realistic form:
+ * IN - User has to pass IN
 
-```ruby
-require 'github/markup'
+ * NOT IN - User has to pass NOTIN
 
-GitHub::Markup.render(file, File.read(file))
-```
+ * IS NULL - User has to pass NULL
 
-And a convenience form:
+ * IS NOT NULL - User has to pass NOTNULL
 
-```ruby
-require 'github/markup'
+ * BETWEEN - User has to pass BW
 
-GitHub::Markup.render_s(GitHub::Markups::MARKUP_MARKDOWN, "* One\n* Two")
-```
+ * NOT BETWEEN - User has to pass NBW
+
+ * STARTS WITH - User has to pass STARTSWITH
+
+ * NOT STARTS WITH - User has to pass NOTSTARTSWITH
+
+ * Ends with - User has to pass ENDS
+
+* Not Ends with - User has to passNOTENDS
+
+ * To check empty data - EMPTY
+
+ * To check non empty data - NOTEMPTY
+
+ *  '>' - User has to pass GT
+
+ *  '<' - User has to pass LT
+
+ *  '>=' -  User has to pass GTE
+
+ *  '<=' - User has to pass LTE
+ 
+ **Expression** : /s/filters
+
+**Description** : This will be used to specify various filter criteria and retrieve the data from several tables.
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : POST
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/s/filters](https://dbapp.500apps.com/v2/s/filters)
+
+**Method** : ”POST”
+
+{"data":{
+
+"fields":"distinct c.id,c.first_name,c.last_name,c.tag,c.custom_value",
+
+"tables":[{"contact_tag":"ct"},{"contact_details":"c"}],
+
+"join":[{"join_type":"join","table1":"ct","join_column1":"contact_id","table2":"c","join_column2":"id"}],
+
+"filters":[{"filter_condition":"","table_name":"ct","field_name":"tag_id","operator":"IN","value1":"'2','5'","value2":""}],
+
+"jsonsearch":
+
+[{"filter_condition":"and","table_name":"c","field_name":"tag","operator":"SEARCH_VALUE","value1":"agile","value2":""}],
+
+"order_by":"c.id",
+
+"order_by_type":"desc",
+
+"limit":"10",
+
+"offset":"0"}}
+
+**************************
+
+SEARCH
+------
+Let you do the search for multiple entities once at time, this  will useful.
+
+ 
+ **Expression** : /s/multi
+
+**Description** : Let you do the search for multiple entities once at time, this  will useful.
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : POST
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/joins](https://dbapp.500apps.com/v2/joins)
+
+**Method** : ”POST”
+
+{"fields":["json_object('name',subject,'email',requester_email)",
+
+"json_object('name',concat(ifnull(first_name,''),' ',ifnull(last_name,'')))"],
+
+"tablename":["ticket","contact"],
+
+"where":[{"search_by":"subject,requester_email"},{"search_by":"first_name,last_name,email"}],
+
+"search":"somi"}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
 
 
-Contributing
-------------
+**************************
 
-See [Contributing](CONTRIBUTING.md).
+DESC
+------
+Describe is used to describe the metadata of table. This will describe the structure of a table.
+ 
+ **Expression** : /m/desc/{table_name}
+
+**Description** : Describe is used to describe the metadata of table. This will describe the structure of a table.
+
+**Input Type(JSON/Json Array/Form-Data)** : path
+
+**Rest Method** : GET
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/desc/ticket](https://dbapp.500apps.com/v2/desc/ticket)
+
+**Method** : ”GET”
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+**************************
+
+IMPORT
+------
+Describe is used to describe the metadata of table. This will describe the structure of a table.
+ 
+ **Expression** : /m/import
+
+**Description** : This  is used for import data from csv file.
+
+**Input Type(JSON/Json Array/Form-Data)** : params,form data
+
+**Rest Method** : POST
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/import](https://dbapp.500apps.com/v2/import)
+
+**Method** : ”POST”
+
+**params**
+
+file_name : contact_import (5).csv
+
+bucket_name : temptrash
+
+table_name : staging
+
+**form-data**
+
+fields : first_name,last_name
+
+ 
+
+**************************
+
+EXPORT
+------
+ 
+**Expression** : /m/export
+
+**Description** : This  is used for export data to csv file.
+
+**Input Type(JSON/Json Array/Form-Data)** : params,json object - raw data
+
+**Rest Method** : POST
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/export](https://dbapp.500apps.com/v2/export)
+
+**Method** : ”POST”
+
+**params**
+
+bucket_name:temptrash
+
+file_name:file1
+
+**json object - raw data**
+
+{"data":{
+
+"fields": "c.id,c.first_name,c.last_name,c.email",
+
+"tables":[{"contact":"c"},{"contact_phone":"cp"},{"contact_email":"ce"},{"company":"com"}],
+
+"join":[{"join_type":"join", "table1":"c","join_column1":"id","table2":"cp","join_column2":"contact_id"},
+{"join_type":"left join", "table1":"c","join_column1":"id","table2":"ce","join_column2":"contact_id"},
+{"join_type":"left join", "table1":"c","join_column1":"id","table2":"com","join_column2":"contact_id"}],
+
+"order_by":"id",
+
+"limit":"9"}}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+**************************
+
+CUSTOM QUERIES
+--------------
+
+ Users add their custom queries in Application properties.In this scenario we get the results based on customQueryId which we pass dynamically in rest call. In every scenario , id must be unique.
+
+
+ **Expression** : /cq/{entity_id}
+
+**Description** : In this scenario we get the results based on customQueryId which we pass dynamically in rest call
+
+**Input Type(JSON/Json Array/Form-Data)** : params
+
+**Rest Method** : GET
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/cq/11](https://dbapp.500apps.com/cq/11)
+
+**Method** : ”GET”
+
+**params**
+
+boolean_value : true
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+**************************
+
+CUSTOM QUERIES INSERT
+----------------------
+
+ Users add their custom queries in Application properties.In this scenario we get the results based on customQueryId which we pass dynamically in rest call. In every scenario , id must be unique.
+
+
+ **Expression** : /cq/{entity_id}
+
+**Description** : In this scenario we get the results based on customQueryId which we pass dynamically in rest call
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : ”POST”
+
+**json object - raw data**
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/cq/6](https://dbapp.500apps.com/cq/6)
+
+**Method** : ”POST”
+
+**json object - raw data**
+
+{
+"fields":"'raju'"
+}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+**************************
+
+CUSTOM QUERIES UPDATE
+----------------------
+
+ Users add their custom queries in Application properties.In this scenario we get the results based on customQueryId which we pass dynamically in rest call. In every scenario , id must be unique.
+
+
+ **Expression** : /cq/{entity_id}
+
+**Description** : In this scenario we get the results based on customQueryId which we pass dynamically in rest call
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : ”PUT”
+
+**json object - raw data**
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/cq/7](https://dbapp.500apps.com/cq/7)
+
+**Method** : ”PUT”
+
+**json object - raw data**
+
+{
+
+	"update_name":"test",
+  
+	"id":"3"
+
+}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+**************************
+
+REPORTS 
+-------
+
+ A report are the formatted result of database queries and contains useful data for decision-making and analysis.
+
+* Bar Chart
+
+ **Expression** : /cq/{entity_id}
+
+**Description** : This is used for reports barchart.
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : ”POST”
+
+**json object - raw data**
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/r/bar](https://dbapp.500apps.com/v2/r/bar)
+
+**Method** : ”POST”
+
+**json object - raw data**
+
+{"data":{ 
+
+"x_axis": "date_format((t.created_time),'%Y-%m')",
+
+"function":"count",
+
+"y_axis":"t.id",
+
+"tables":[{"ticket":"t"}],
+"where":"month(t.created_time)=month(current_date)-1",
+
+"order_by":"t.created_time",
+
+"order_by_type":"desc}}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+
+* Line Chart
+
+ **Expression** : /r/line
+
+**Description** : This is used to generate the line chart
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : ”POST”
+
+**json object - raw data**
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/r/bar](https://dbapp.500apps.com/v2/r/bar)
+
+**Method** : ”POST”
+
+**json object - raw data**
+
+{"data":{ 
+
+"x_axis": "date_format((t.created_time),'%Y-%m')",
+
+"function":"count",
+
+"y_axis":"t.id",
+
+"tables":[{"ticket":"t"}],
+
+"where":"month(t.created_time)=month(current_date)-1",
+
+"order_by":"t.created_time",
+
+"order_by_type":"desc"}}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+
+
+* Funnel Chart
+
+ **Expression** : /r/fc
+
+**Description** : This is used to generate the Funnel chart
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : ”POST”
+
+**json object - raw data**
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/r/bar](https://dbapp.500apps.com/v2/r/bar)
+
+**Method** : ”POST”
+
+**json object - raw data**
+
+{"data":{ 
+
+"x_axis": "t.id",
+
+"function":"count",
+
+"y_axis":"t.id",
+
+"tables":[{"ticket":"t"},{"`contact`":"c"}],
+
+"join":[{"join_type":"join","table1":"t","join_column1":"contact_id","table2":"c","join_column2":"id"}],
+
+"group_by":"t.contact_id"}}
+
+![Image](file:///home/agile/Desktop/readme1.png "image")
+
+
+* Pie Chart
+
+ **Expression** : /r/pie
+
+**Description** : This is used to generate the Pie chart
+
+**Input Type(JSON/Json Array/Form-Data)** : json object - raw data
+
+**Rest Method** : ”POST”
+
+**json object - raw data**
+
+> **A sample is given below:**
+
+**RestCall**: [https://dbapp.500apps.com/v2/r/bar](https://dbapp.500apps.com/v2/r/bar)
+
+**Method** : ”POST”
+
+**json object - raw data**
+
+{"data": {
+
+"Aggregate": "count",
+
+"pie": "tc.name",
+
+"percentage_by": "t.id",
+
+"name": "high,medium,low",
+
+"tables": {"ticket_category": "tc","ticket": "t"},
+
+"tables": [{"ticket_category": "tc"},{"ticket": "t"}],
+
+"join": [{"join_type": "join","table1": "tc","join_column1": "id","table2": "t","join_column2": "priority"}]
+
+}}
+
+
+
+
+
+
